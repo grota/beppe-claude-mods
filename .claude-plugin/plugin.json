@@ -1,0 +1,28 @@
+{
+  "name": "collapse-tools",
+  "version": "0.1.0",
+  "description": "Collapse tool calls in the transcript; click the chevron to expand or collapse",
+  "author": { "name": "Giuseppe Rota" },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "enabled": {
+      "type": "boolean",
+      "title": "Collapse tool calls",
+      "description": "Turn off to show tool calls as Claude Code normally does",
+      "default": true
+    },
+    "expandedTools": {
+      "type": "string",
+      "multiple": true,
+      "title": "Tools kept expanded",
+      "description": "Tool names that start expanded",
+      "default": ["Edit", "Write", "NotebookEdit", "AskUserQuestion", "ExitPlanMode"]
+    },
+    "collapseSubagents": {
+      "type": "boolean",
+      "title": "Collapse subagents",
+      "description": "Start Agent calls collapsed, hiding their nested tool calls",
+      "default": true
+    }
+  }
+}
