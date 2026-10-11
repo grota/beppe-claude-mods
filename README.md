@@ -1,53 +1,25 @@
-# collapse-tools
+# beppe-claude-mods
 
-A Claude Code mod that shows tool calls collapsed in the transcript. Click the chevron to expand or collapse a call.
+A Claude Code plugin marketplace with Giuseppe Rota's mods.
 
-```
-▸ Bash(npm test) ✓ 142 lines
-▾ Edit(src/app.ts)   ← kept expanded by default
-```
+| Mod                                                | What it does                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [collapse-tools](plugins/collapse-tools/README.md) | Collapses tool calls in the transcript; click the chevron to expand or collapse |
 
-- Running calls stay expanded and collapse when they finish, unless you toggled them.
-- Failed calls and the tools listed in `expandedTools` start expanded.
-- Folded runs of reads and searches get a chevron that unfolds them.
-- Agent calls start collapsed, hiding their nested calls.
-- Toggles reset each session.
+## Install a mod
 
-Clicks work in fullscreen mode, including inside tmux with `set -g mouse on`. Outside fullscreen, use the command below.
-
-## Run
+At the Claude Code prompt, replacing `<mod>` with a name from the table:
 
 ```
-claude --plugin-dir /path/to/claude-mod-collapse
+/plugin install <mod> --marketplace grota/beppe-claude-mods
 ```
 
-## Command
+## Add a mod
 
-`/collapse all`, `/collapse none`, or `/collapse` (toggle between expanded and the default state).
-
-To bind the toggle to `ctrl+x c`, add this to `~/.claude/keybindings.json`:
-
-```json
-{
-  "bindings": [
-    { "context": "Global", "bindings": { "ctrl+x c": "command:collapse" } }
-  ]
-}
-```
-
-## Settings
-
-Edit these in `/config`:
-
-| Option              | Default                                                  | Effect                                   |
-| ------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| `enabled`           | `true`                                                   | Turn the mod off without uninstalling it |
-| `expandedTools`     | Edit, Write, NotebookEdit, AskUserQuestion, ExitPlanMode | Tools that start expanded                |
-| `collapseSubagents` | `true`                                                   | Start Agent calls collapsed              |
-
-## Develop
+Put each mod in `plugins/<name>/` and list it in `.claude-plugin/marketplace.json` with `"source": "./plugins/<name>"`.
 
 ```
 claude plugin validate .
-claude plugin test .
+claude plugin validate plugins/<name>
+claude plugin test plugins/<name>
 ```

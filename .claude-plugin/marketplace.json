@@ -1,0 +1,14 @@
+{
+  "name": "beppe-claude-mods",
+  "description": "Giuseppe Rota's Claude Code mods",
+  "owner": {
+    "name": "Giuseppe Rota"
+  },
+  "plugins": [
+    {
+      "name": "collapse-tools",
+      "source": "./plugins/collapse-tools",
+      "description": "Collapse tool calls in the transcript; click the chevron to expand or collapse"
+    }
+  ]
+}
