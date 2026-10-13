@@ -49,11 +49,11 @@ To bind the toggle to `ctrl+x c`, add this to `~/.claude/keybindings.json`:
 
 Edit these in `/config`:
 
-| Option              | Default                                                  | Effect                                   |
-| ------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| `enabled`           | `true`                                                   | Turn the mod off without uninstalling it |
-| `expandedTools`     | Edit, Write, NotebookEdit, AskUserQuestion, ExitPlanMode | Tools that start expanded                |
-| `collapseSubagents` | `true`                                                   | Start Agent calls collapsed              |
+| Option              | Default                                                  | Effect                                    |
+| ------------------- | -------------------------------------------------------- | ----------------------------------------- |
+| `enabled`           | `true`                                                   | Turn the mod off without uninstalling it  |
+| `expandedTools`     | Edit, Write, NotebookEdit, AskUserQuestion, ExitPlanMode | Comma-separated tools that start expanded |
+| `collapseSubagents` | `true`                                                   | Start Agent calls collapsed               |
 
 ## Develop
 

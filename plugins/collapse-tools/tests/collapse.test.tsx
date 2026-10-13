@@ -112,6 +112,18 @@ test('/collapse none expands every call, /collapse all collapses Edit too', asyn
   expect(await edit.find({ text: 'engine row' })).toBeUndefined()
 })
 
+test('expandedTools takes a comma-separated list', { options: { expandedTools: 'Read, Bash' } }, async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine row</Text>
+  })
+  const bash = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'ToolUse', props: BASH_ROW })
+  const edit = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'ToolUse', props: EDIT_ROW })
+
+  expect(await bash.find({ text: 'engine row' })).toBeDefined()
+  expect(await edit.find({ text: 'engine row' })).toBeUndefined()
+})
+
 test('disabled: rows draw as the engine does', { options: { enabled: false } }, async ($, on) => {
   on('ui.render', ($, e) => {
     const { Text } = $.ui.resolve(e)

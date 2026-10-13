@@ -21,6 +21,14 @@ async function isOpen($: EngineInterface, id: string, auto: boolean): Promise<bo
   return current === 'auto' ? auto : current === 'expanded'
 }
 
+// A string field, comma-separated, so /config can show it as a text row; an
+// array is still read for values stored when the field was `multiple`.
+function toolList(value: unknown): string[] {
+  const names = Array.isArray(value) ? value : typeof value === 'string' ? value.split(',') : []
+
+  return names.map(name => String(name).trim()).filter(Boolean)
+}
+
 async function setOpen($: EngineInterface, id: string, open: boolean): Promise<void> {
   await update($, overrides, all => ({ ...all, [id]: open }))
 }
@@ -29,7 +37,7 @@ export const register: Register = (on, options) => {
   if (options.enabled === false) {
     return
   }
-  const expandedTools = Array.isArray(options.expandedTools) ? options.expandedTools : []
+  const expandedTools = toolList(options.expandedTools)
   const collapseSubagents = options.collapseSubagents !== false
 
   const startsOpen = (tool: string, status: CallStatus): boolean =>

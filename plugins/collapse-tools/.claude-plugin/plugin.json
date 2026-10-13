@@ -13,10 +13,9 @@
     },
     "expandedTools": {
       "type": "string",
-      "multiple": true,
       "title": "Tools kept expanded",
-      "description": "Tool names that start expanded",
-      "default": ["Edit", "Write", "NotebookEdit", "AskUserQuestion", "ExitPlanMode"]
+      "description": "Comma-separated tool names that start expanded",
+      "default": "Edit, Write, NotebookEdit, AskUserQuestion, ExitPlanMode"
     },
     "collapseSubagents": {
       "type": "boolean",
