@@ -9,6 +9,8 @@ const mode = atom({ plugin: 'collapse-tools', key: 'mode' } as const, 'auto' as 
 const overrides = atom({ plugin: 'collapse-tools', key: 'overrides' } as const, {} as Overrides)
 
 const AGENT_TOOLS = ['Agent', 'Task']
+const HANDBACK = /^\s*\[Subagent hand-back\]/
+const REPORT_START = /The report follows:\s*/
 const MODES: Record<string, Mode> = { all: 'collapsed', none: 'expanded' }
 
 async function isOpen($: EngineInterface, id: string, auto: boolean): Promise<boolean> {
@@ -38,14 +40,16 @@ export const register: Register = (on, options) => {
     return
   }
   const expandedTools = toolList(options.expandedTools)
-  const collapseSubagents = options.collapseSubagents !== false
+  const collapseOwnSubagents = options.collapseOwnSubagents !== false
+  const collapseFailed = options.collapseFailed !== false
+  const collapseOtherAgents = options.collapseOtherAgents === true
 
   const startsOpen = (tool: string, status: CallStatus): boolean =>
     status.isRunning ||
-    status.isErrored ||
+    (status.isErrored && !collapseFailed) ||
     status.isInterrupted ||
     expandedTools.includes(tool) ||
-    (!collapseSubagents && AGENT_TOOLS.includes(tool))
+    (!collapseOwnSubagents && AGENT_TOOLS.includes(tool))
 
   on('session.start', async ($, e, next) => {
     await $.command.register({
@@ -129,6 +133,56 @@ export const register: Register = (on, options) => {
     const { Box } = $.ui.resolve(e)
 
     return <Box />
+  })
+
+  // A background subagent's report arrives as a message row from that agent,
+  // opened by the engine's hand-back frame; a teammate's or another session's
+  // message is a row from that agent without it. The engine can draw either in
+  // full (isExpanded) under its speaker label, so that flag is not a reason to
+  // pass. A channel's message is a person's, and is never collapsed.
+  on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
+    const { from, origin, text } = e.props
+    if (from === undefined || origin.kind === 'channel') {
+      return next(e)
+    }
+    const isReport = HANDBACK.test(text)
+    if (isReport ? !collapseOwnSubagents : !collapseOtherAgents) {
+      return next(e)
+    }
+    const id = `message-${e.requestId}`
+    const open = await isOpen($, id, false)
+    const { Box, Button, Text } = $.ui.resolve(e)
+    const chevron = (
+      <Button key={id} plain label={open ? '▾' : '▸'} onPress={() => setOpen($, id, !open)} />
+    )
+
+    if (open) {
+      return (
+        <Box flexDirection="row">
+          {chevron}
+          <Text> </Text>
+          {await next(e)}
+        </Box>
+      )
+    }
+    const columns = e.viewport?.columns ?? 100
+    const report = isReport ? (text.split(REPORT_START)[1] ?? '') : text
+    const prefix = `${isReport ? 'Report' : 'Message'} from ${from.name}`
+
+    return (
+      <Box flexDirection="row">
+        {chevron}
+        <Text>
+          {' '}
+          <Text bold>{prefix}</Text>
+          <Text dimColor>
+            {report.trim() === ''
+              ? ''
+              : ` ${truncate(report, Math.max(20, columns - prefix.length - 10))}`}
+          </Text>
+        </Text>
+      </Box>
+    )
   })
 
   on('ui.render', { component: 'ToolGroup' }, async ($, e, next) => {

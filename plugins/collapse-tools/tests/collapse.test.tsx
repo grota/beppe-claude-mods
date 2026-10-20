@@ -133,3 +133,102 @@ test('disabled: rows draw as the engine does', { options: { enabled: false } }, 
 
   expect(await ui.find({ text: 'engine row' })).toBeDefined()
 })
+
+const FAILED_ROW: RenderPropsOf['ToolUse'] = {
+  ...BASH_ROW,
+  tool_use_id: 'toolu_3',
+  isErrored: true,
+  output: 'Exit code 1',
+}
+
+test('a failed call starts collapsed with a ✗ mark', async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine row</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'ToolUse', props: FAILED_ROW })
+
+  expect(await ui.find({ text: 'engine row' })).toBeUndefined()
+  expect(await ui.find({ text: /✗/ })).toBeDefined()
+})
+
+test('collapseFailed off: a failed call starts expanded', { options: { collapseFailed: false } }, async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine row</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'ToolUse', props: FAILED_ROW })
+
+  expect(await ui.find({ text: 'engine row' })).toBeDefined()
+})
+
+const REPORT: RenderPropsOf['UserMessage'] = {
+  text: '[Subagent hand-back] The text below is the final report. The report follows:\n  1. Top-level entries: README.md\n  2. register.tsx: 202 lines',
+  origin: { kind: 'task-notification' },
+  isExpanded: true,
+  from: { name: 'general-purpose' },
+}
+
+test('a subagent report starts collapsed and expands on click', async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine report</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'UserMessage', props: REPORT, requestId: 'msg_1' })
+
+  expect(await ui.find({ text: 'engine report' })).toBeUndefined()
+  expect(await ui.find({ text: /Report from general-purpose/ })).toBeDefined()
+  expect(await ui.find({ text: /Top-level entries/ })).toBeDefined()
+
+  await ui.press({ key: 'message-msg_1' })
+  expect(await ui.find({ text: 'engine report' })).toBeDefined()
+})
+
+const PEER_MESSAGE: RenderPropsOf['UserMessage'] = {
+  text: 'Can you review my change?',
+  origin: { kind: 'peer' },
+  isExpanded: true,
+  from: { name: 'other session' },
+}
+
+test('a message from another agent is not collapsed by default', async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine report</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'UserMessage', props: PEER_MESSAGE })
+
+  expect(await ui.find({ text: 'engine report' })).toBeDefined()
+})
+
+test('collapseOtherAgents on: a message from another agent starts collapsed', { options: { collapseOtherAgents: true } }, async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine report</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'UserMessage', props: PEER_MESSAGE })
+
+  expect(await ui.find({ text: 'engine report' })).toBeUndefined()
+  expect(await ui.find({ text: /Message from other session/ })).toBeDefined()
+})
+
+test('collapseOtherAgents on: a channel message is not collapsed', { options: { collapseOtherAgents: true } }, async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine report</Text>
+  })
+  const props = { ...PEER_MESSAGE, origin: { kind: 'channel', server: 'slack' } } as const
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'UserMessage', props })
+
+  expect(await ui.find({ text: 'engine report' })).toBeDefined()
+})
+
+test('collapseOwnSubagents off: a subagent report draws as the engine does', { options: { collapseOwnSubagents: false } }, async ($, on) => {
+  on('ui.render', ($, e) => {
+    const { Text } = $.ui.resolve(e)
+    return <Text>engine report</Text>
+  })
+  const ui = await $.ui.mount({ plugin: 'collapse-tools', surface: 'terminal', component: 'UserMessage', props: REPORT })
+
+  expect(await ui.find({ text: 'engine report' })).toBeDefined()
+})

@@ -2,7 +2,9 @@
   "name": "collapse-tools",
   "version": "0.1.0",
   "description": "Collapse tool calls in the transcript; click the chevron to expand or collapse",
-  "author": { "name": "Giuseppe Rota" },
+  "author": {
+    "name": "Giuseppe Rota"
+  },
   "types": "./types/index.d.ts",
   "userConfig": {
     "enabled": {
@@ -17,11 +19,23 @@
       "description": "Comma-separated tool names that start expanded",
       "default": "Edit, Write, NotebookEdit, AskUserQuestion, ExitPlanMode"
     },
-    "collapseSubagents": {
+    "collapseOwnSubagents": {
       "type": "boolean",
       "title": "Collapse subagents",
-      "description": "Start Agent calls collapsed, hiding their nested tool calls",
+      "description": "Start Agent calls collapsed, hiding their nested tool calls and the report a background subagent hands back",
       "default": true
+    },
+    "collapseFailed": {
+      "type": "boolean",
+      "title": "Collapse failed calls",
+      "description": "Start failed tool calls collapsed too, marked with ✗",
+      "default": true
+    },
+    "collapseOtherAgents": {
+      "type": "boolean",
+      "title": "Collapse messages from other agents",
+      "description": "Start messages from teammates and other Claude sessions collapsed",
+      "default": false
     }
   }
 }
