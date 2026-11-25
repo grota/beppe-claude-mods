@@ -9,6 +9,11 @@
       "name": "collapse-tools",
       "source": "./plugins/collapse-tools",
       "description": "Collapse tool calls in the transcript; click the chevron to expand or collapse"
+    },
+    {
+      "name": "prompt-navigator",
+      "source": "./plugins/prompt-navigator",
+      "description": "List your prompts in a side pane; press one to jump to it"
     }
   ]
 }

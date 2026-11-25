@@ -5,6 +5,7 @@ A Claude Code plugin marketplace with Giuseppe Rota's mods.
 | Mod                                                | What it does                                                                    |
 | -------------------------------------------------- | ------------------------------------------------------------------------------- |
 | [collapse-tools](plugins/collapse-tools/README.md) | Collapses tool calls in the transcript; click the chevron to expand or collapse |
+| [prompt-navigator](plugins/prompt-navigator/README.md) | Lists your prompts in a side pane; press one to jump to it |
 
 ## Install a mod
 
